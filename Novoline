@@ -1,43 +1,133 @@
+_G.novolineloaded = true
+local whitelistednigerians = loadstring(game:HttpGet("https://raw.githubusercontent.com/Nebulaprivatewhitelistbypass/novoline/main/wltable.lua", true))()
+if whitelistednigerians [game:GetService("RbxAnalyticsService"):GetClientId()] then
 local Rayfield = loadstring(game:HttpGet('https://raw.githubusercontent.com/shlexware/Rayfield/main/source'))()
 
+--MAIN
 local Window = Rayfield:CreateWindow({
-    Name = "Novoline",
-    LoadingTitle = "monkeys",
-    LoadingSubtitle = "hello",
-    ConfigurationSaving = {
-        Enabled = true,
-        FolderName = "Novoline",
-        FileName = "CONFIG"
-    },
-    KeySystem = true,
-    KeySettings = {
-        Title = "Novoline",
-        Subtitle = "lmao",
-        Note = "Key is key",
-        FileName = "Novo",
-        SaveKey = true,
-        GrabKeyFromSite = false,
-        Key = "key"
-    }
+   Name = "Novoline v 1.0.0",
+   LoadingTitle = "heh",
+   LoadingSubtitle = "by david/dev team",
+   ConfigurationSaving = {
+      Enabled = true,
+      FolderName = nil, -- Create a custom folder for your hub/game
+      FileName = "Novoline"
+   },
+   Discord = {
+      Enabled = false,
+      Invite = "NOVO", -- The Discord invite code, do not include discord.gg/. E.g. discord.gg/ABCD would be ABCD.
+      RememberJoins = false -- Set this to false to make them join the discord every time they load it up
+   },
+   KeySystem = false, -- Set this to true to use our key system
+   KeySettings = {
+      Title = "Sirius Hub",
+      Subtitle = "Key",
+      Note = "enter your key",
+      FileName = "NovolineKey",
+      SaveKey = true,
+      GrabKeyFromSite = false, -- If this is true, set Key below to the RAW site you would like Rayfield to get the key from
+      Key = "novoline-keyg23331f11k1"
+   }
 })
 
--- TABS (Combat etc etc)
+Novoline["Tabs"] = {
+    ["Combat"] = window:CreateTab("Combat"),
+    ["Visuals"] = window:CreateTab("Visuals"),
+    ["Utility"] = window:CreateTab("Utility"),
+    ["World"] = window:CreateTab("World"),
+    ["Animations"] = window:CreateTab("Animations")
+}
+Novoline["Sections"] = {
+    ["Combat"] = HamWare["Tabs"]["Combat"]:CreateSection("Combat"),
+    ["Visuals"] = HamWare["Tabs"]["Render"]:CreateSection("Visuals"),
+    ["Utility"] = HamWare["Tabs"]["Utility"]:CreateSection("Utility"),
+    ["World"] = HamWare["Tabs"]["World"]:CreateSection("World"),
+    ["Animations"] = HamWare["Tabs"]["Exploits"]:CreateSection("Animations")
+}
+Novoline["Library"] = library
+local LastNotification = 0
+function createnotification(Title2,Content2)
+    local diff = math.abs(LastNotification - tick())
+    if diff >= 0.3 then
+        library:Notify(Title2,Content2,10010348543)
+        LastNotification = tick()
+    end
+end
+function runcode(func)
+    func()
+end
+local NewFunc = {}; NewFunc["NewElement"] = function(argtable)
+    local toggled = false
+    local addfuncs = {}
+    local toggle = argtable["Tab"]:CreateToggle({
+        Name = argtable["Name"],
+        CurrentValue = false,
+        Flag = "Toggle_"..argtable["Name"],
+        Callback = function(Val)
+            toggled = Val
+            if toggled then
+                spawn(function()
+                    createnotification("Module Toggled",argtable["Name"].." has been Enabled!")
+                end)
+                spawn(function()
+                    argtable["Callback"](true)
+                end)
+            else
+                spawn(function()
+                    createnotification("Module Toggled",argtable["Name"].." has been Disabled!")
+                end)
+                spawn(function()
+                    argtable["Callback"](false)
+                end)
+            end
+        end
+    })
+    argtable["Tab"]:CreateKeybind({
+        Name = argtable["Name"].." Keybind",
+        CurrentKeybind = "",
+        HoldToInteract = false,
+        Flag = argtable["Name"].."_Bind",
+        Callback = function()
+            toggle:Set(not toggled)
+        end
+    })
+    function addfuncs:NewTextbox(argtable2)
+        argtable["Tab"]:CreateInput({
+            Name = argtable2["Name"],
+            PlaceholderText = "Input Here",
+            RemoveTextAfterFocusLost = false,
+            Flag = "Textbox_"..argtable["Name"].."_"..argtable2["Name"],
+            Callback = argtable2["Callback"]
+        })
+    end
+    function addfuncs:NewDropdown(argtable2)
+        argtable["Tab"]:CreateDropdown({
+            Name = argtable2["Name"],
+            Options = argtable2["List"],
+            CurrentOption = argtable2["Default"] or (argtable2["List"][1]),
+            Flag = "Dropdown_"..argtable["Name"].."_"..argtable2["Name"],
+            Callback = argtable2["Callback"]
+        })
+    end
+    function addfuncs:NewSlider(argtable2)
+        argtable["Tab"]:CreateSlider({
+            Name = argtable2["Name"],
+            Range = {argtable2["Min"] or 0, argtable2["Max"]},
+            Increment = argtable2["Increment"] or 1,
+            Suffix = "",
+            CurrentValue = argtable2["Default"] or 0,
+            Flag = "Slider_"..argtable["Name"].."_"..argtable2["Name"],
+            Callback = argtable2["Callback"]
+        })
+    end
+    function addfuncs:Toggle()
+        toggle:Set(not Toggled)
+    end
+    return addfuncs
+end
+Novoline["Createnotification"] = Createnotification
+Novoline["NewElement"] = NewElement
 
-local Combat = Window:CreateTab("Combat")
-local Blatant = Window:CreateTab("Blatant")
-local Utility = Window:CreateTab("Utility")
-local Visuals = Window:CreateTab("Visuals")
-local World = Window:CreateTab("World")
-local Exploit = Window:CreateTab("Exploits")
-
-Visuals:CreateSection("Main")
-Combat:CreateSection("Main")
-World:CreateSection("Main")
-Utility:CreateSection("Main")
-Exploit:CreateSection("Main")
-Blatant:CreateSection("Main")
-
--- variables (lp etc)  
 local lplr = game:GetService("Players").LocalPlayer
 local cam = game:GetService("Workspace").CurrentCamera
 local uis = game:GetService("UserInputService")
@@ -133,79 +223,227 @@ function getitem(itm)
     end
     return false
 end
-}
 
-
-do
-    local fov = 0
-    local fovval
-    local ischanged
+runcode(function()
     local Enabled = false
-	local FOVCHANGER = Visuals:CreateToggle({
-		Name = "FOV",
-		CurrentValue = false,
-		Flag = "FOVTOGGLE",
-		Callback = function(val)
-			Enabled = val
+    local Sprint = NewFunc["NewElement"]({
+        ["Name"] = "Sprint",
+        ["Tab"] = Novoline["Tabs"]["Combat"],
+        ["Callback"] = function(val)
+            Enabled = val
             if Enabled then
-             fovval = fov
-             ischanged = cam:GetPropertyChangedSignal("FieldOfView"):Connect(function()
-                 cam.FieldOfView = fovval
-            end)
+                spawn(function()
+                    repeat
+                        task.wait()
+                        if not bedwars["SprintController"].sprinting then
+                            bedwars["SprintController"]:startSprinting()
+                        end
+                    until not Enabled
+                end)
             else
-                ischanged:Disconnect()
-                cam.FieldOfView = 80
+                bedwars["SprintController"]:stopSprinting()
             end
         end
     })
-    local FOVDISTANCE = Visuals:CreateSlider({
-		Name = "Fov",
-		Range = {1, 120},
-		Increment = 1,
-		Suffix = "Fov",
-		CurrentValue = 22,
-		Flag = "sliderfov",
-		Callback = function(Value)
-			fov = Value
-		end
-	})
-end
+end)
 
-do
-local Enabled = false
-local Sprint = Combat:CreateToggle({
-    Name = "Sprint",
-    Flag = "Sprint",
-    Callback = function(val)
-        Enabled = val
-        if Enabled then
-       bedwars["SprintController"]:startSprinting()
-        else
-       bedwars["SprintController"]:stopSprinting()
+runcode(function()
+    local old
+    local Enabled = false
+    local Velo = NewFunc["NewElement"]({
+        ["Name"] = "Velocity",
+        ["Tab"] = Novoline["Tabs"]["Combat"],
+        ["Callback"] = function(val)
+            Enabled = val
+            if Enabled then
+                old = bedwars["KnockbackUtil"].applyKnockback
+                bedwars["KnockbackUtil"].applyKnockback = function() end
+            else
+                bedwars["KnockbackUtil"].applyKnockback = old
+                old = nil
+            end
         end
-    end
-})
-end
+    })
+end)
 
-
-do 
-local Enabled = false
-local Speed = Combat:CreateToggle({
-    Name = "Speed",
-    Flag = "Speed",
-    Callback = function(val)
-        Enabled = val
-        if Enabled then
-           repeat
-            task.wait(0.25)
-            game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame = game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame + game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame.lookVector * 1
-        until not Enabled
+runcode(function()
+    local connection
+    local Enabled = false
+    local NoFall = NewFunc["NewElement"]({
+        ["Name"] = "NoFall",
+        ["Tab"] = Novoline["Tabs"]["Combat"],
+        ["Callback"] = function(val)
+            Enabled = val
+            if Enabled then
+                spawn(function()
+                    repeat
+                        task.wait(0.5)
+                        Client:Get("GroundHit"):SendToServer()
+                    until not Enabled
+                end)
+            end
         end
-    end
-})
-end
+    })
+end)
 
-do
+runcode(function()
+    local velo
+    local Mode = {["Value"] = "Normal"}
+    local Enabled = false
+    local Fly = NewFunc["NewElement"]({
+        ["Name"] = "Flight",
+        ["Tab"] = Novoline["Tabs"]["Combat"],
+        ["Callback"] = function(val)
+            Enabled = val
+            if Enabled then
+                velo = Instance.new("BodyVelocity")
+                velo.MaxForce = Vector3.new(0,9e9,0)
+                velo.Parent = lplr.Character:FindFirstChild("HumanoidRootPart")
+                spawn(function()
+                    repeat
+                        task.wait()
+                        if Mode["Value"] == "Normal" then
+                            velo.Velocity = Vector3.new(0,1,0)
+                            task.wait(0.15)
+                            velo.Velocity = Vector3.new(0,0.1,0)
+                            task.wait(0.15)
+                        else
+                            Mode["Value"] = "Normal"
+                        end
+                    until not Enabled
+                end)
+            else
+                velo:Destroy()
+                for i,v in pairs(lplr.Character:FindFirstChild("HumanoidRootPart"):GetChildren()) do
+                    if v:IsA("BodyVelocity") then
+                        v:Destroy()
+                    end
+                end
+            end
+        end
+    })
+end)
+
+runcode(function()
+    local Enabled = false
+    local Party = NewFunc["NewElement"]({
+        ["Name"] = "Partyeffect",
+        ["Tab"] = Novoline["Tabs"]["Combat"],
+        ["Callback"] = function(val)
+            Enabled = val
+            if Enabled then
+            spawn(function()
+                repeat
+                    wait(0.1)
+            game:GetService("ReplicatedStorage")["events-@easy-games/game-core:shared/game-core-networking@getEvents.Events"].useAbility:FireServer("PARTY_POPPER")
+               until PopperExploit["Enabled"] == false
+            end)
+          end
+      end,
+ })
+end)
+
+runcode(function()
+    local Enabled = false
+    local BlockExploit = NewFunc["NewElement"]({
+        ["Name"] = "BlockExploit",
+        ["Tab"] = Novoline["Tabs"]["Combat"],
+        ["Callback"] = function(val)
+            Enabled = val
+            if Enabled then
+					if Ignoreplaceregions["Disabled"] then 
+						return
+					end
+					oldallowplacement = require(game:GetService("ReplicatedStorage").rbxts_include.node_modules["@easy-games"]["block-engine"].out).BlockEngine.isAllowedPlacement
+					require(game:GetService("ReplicatedStorage").rbxts_include.node_modules["@easy-games"]["block-engine"].out).BlockEngine.isAllowedPlacement = function(a, ab, abc, abcd)
+						return true
+					end
+					RunLoops:BindToHeartbeat("IgnorePlaceRegions", 1, function()
+						if lplr:GetAttribute("DenyBlockPlace") then
+							lplr:SetAttribute("DenyBlockPlace", false)
+						end
+					end)
+					 local KnitClient = debug.getupvalue(require(game.Players.LocalPlayer.PlayerScripts.TS.knit).setup, 6)
+				    	KnitClient.Controllers.MapController.denyRegions = {}
+					    local place = game:GetService("UserInputService").InputBegan:Connect(function(input)
+						if input.UserInputType == Enum.UserInputType.MouseButton1 and Ignoreplaceregions["Enabled"] then
+							local Position = game.Players.LocalPlayer:GetMouse().Hit
+							local NewPosition = {
+								X = math.round((Position.X/3)),
+								Y = math.round((Position.Y/3)),
+								Z = math.round((Position.Z/3)),
+							}
+							for i,v in pairs(game.Players.LocalPlayer.Character:GetChildren()) do
+								if v:IsA("Accessory") and v:FindFirstChild("Handle") and v.Handle:FindFirstChild("Left") then
+									local args = {
+										[1] = {
+											["position"] = Vector3.new(NewPosition.X, NewPosition.Y, NewPosition.Z),
+											["blockType"] = v.Name
+										}
+									}
+	
+									game:GetService("ReplicatedStorage").rbxts_include.node_modules:FindFirstChild("@rbxts").net.out._NetManaged.PlaceBlock:InvokeServer(unpack(args))
+									break
+								end
+							end
+						end
+					end)
+				else
+					require(game:GetService("ReplicatedStorage").rbxts_include.node_modules["@easy-games"]["block-engine"].out).BlockEngine.isAllowedPlacement = oldallowplacement
+					oldallowplacement = nil
+					pcall(function()
+						RunLoops:UnbindFromHeartbeat("IgnorePlaceRegions")
+					end)
+				end
+			end,
+		})
+end)
+
+runcode(function()
+    local Distance = {["Value"] = 30}
+    local Enabled = false
+    local Nuker = NewFunc["NewElement"]({
+        ["Name"] = "Nuker",
+        ["Tab"] = Novoline["Tabs"]["World"],
+        ["Callback"] = function(val)
+            Enabled = val
+            if Enabled then
+                spawn(function()
+                    repeat
+                        task.wait(0.1)
+                        if isalive(lplr) and lplr.Character:FindFirstChild("Humanoid").Health > 0.1 then
+                            local beds = getbeds()
+                            for i,v in pairs(beds) do
+                                local mag = (v.Position - lplr.Character:FindFirstChild("HumanoidRootPart").Position).Magnitude
+                                if mag < Distance["Value"] then
+                                    local serverpos = getserverpos(v.Position)
+                                    game:GetService("ReplicatedStorage").rbxts_include.node_modules:FindFirstChild("@rbxts").net.out._NetManaged.DamageBlock:InvokeServer({
+                                        ["blockRef"] = {
+                                            ["blockPosition"] = serverpos
+                                        },
+                                        ["hitPosition"] = serverpos,
+                                        ["hitNormal"] = serverpos
+                                    })
+                                end
+                            end
+                        end
+                    until not Enabled
+                end)
+            end
+        end
+    })
+    Nuker:NewSlider({
+        ["Name"] = "Distance",
+        ["Min"] = 1,
+        ["Max"] = 16,
+        ["Default"] = 16,
+        ["Callback"] = function(val)
+            Distance["Value"] = val
+        end
+    })
+end)
+
+runcode(function()
     local BedwarsSwords = require(game:GetService("ReplicatedStorage").TS.games.bedwars["bedwars-swords"]).BedwarsSwords
     function hashFunc(vec) 
         return {value = vec}
@@ -251,171 +489,93 @@ do
             end
         end
         return returning
-     end
-local Enabled = false
-local NoFall = Combat:CreateToggle({
-    Name = "NoFall",
-    Flag = "NoFall",
-    Callback = function(val)
-        Enabled = val
-        if Enabled then
-            repeat
-            task.wait(0.1)
-            game:GetService("ReplicatedStorage").rbxts_include.node_modules:FindFirstChild("@rbxts").net.out._NetManaged.GroundHit:FireServer()
-            until not Enabled
-        end
-    end
-})
-end
-
-do
-    Blatant:CreateSection("InfFly")
-    -- Gui to Lua
-    -- Version: 3.2
-
-    -- Instances:
-
-    local InfFly = Instance.new("ScreenGui")
-    local FlyRender = Instance.new("Frame")
-    local FlyStat = Instance.new("TextLabel")
-    local FlyHeight = Instance.new("TextLabel")
-
-    --Properties:
-
-    InfFly.Name = "InfFly"
-    InfFly.Parent = game.Players.LocalPlayer:WaitForChild("PlayerGui")
-    InfFly.ZIndexBehavior = Enum.ZIndexBehavior.Sibling
-    InfFly.ResetOnSpawn = false
-
-    FlyRender.Name = "FlyRender"
-    FlyRender.Parent = InfFly
-    FlyRender.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
-    FlyRender.BackgroundTransparency = 0.910
-    FlyRender.Position = UDim2.new(0.399138957, 0, 0.674563587, 0)
-    FlyRender.Size = UDim2.new(0, 335, 0, 90)
-
-    FlyStat.Name = "FlyStat"
-    FlyStat.Parent = FlyRender
-    FlyStat.Active = true
-    FlyStat.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
-    FlyStat.BackgroundTransparency = 1.000
-    FlyStat.Position = UDim2.new(0.195718661, 0, 0, 0)
-    FlyStat.Size = UDim2.new(0, 200, 0, 50)
-    FlyStat.Font = Enum.Font.FredokaOne
-    FlyStat.Text = "Status : Safe"
-    FlyStat.TextColor3 = Color3.fromRGB(33, 255, 107)
-    FlyStat.TextSize = 30.000
-
-    FlyHeight.Name = "FlyHeight"
-    FlyHeight.Parent = FlyRender
-    FlyHeight.Active = true
-    FlyHeight.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
-    FlyHeight.BackgroundTransparency = 1.000
-    FlyHeight.Position = UDim2.new(0.195718661, 0, 0.444444448, 0)
-    FlyHeight.Size = UDim2.new(0, 200, 0, 50)
-    FlyHeight.Font = Enum.Font.FredokaOne
-    FlyHeight.Text = "Y : 100"
-    FlyHeight.TextColor3 = Color3.fromRGB(255, 255, 255)
-    FlyHeight.TextSize = 30.000
-    InfFly.Enabled = false
-    FlyRender.Visible = false
-    FlyRender.Draggable = true
-
-
+    end 
+    local HitRemote = Client:Get(bedwars["SwordRemote"])--["instance"]
+    local Distance = {["Value"] = 18}
     local Enabled = false
-    local heightval = 1
-    local heighttext = ""
-    local safeornot = 1
-    local char = lplr.Character
-    local KeybindINFFLYCheck = false;
-    local infflykeybind;
-    local hrp = lplr.Character:FindFirstChild("HumanoidRootPart")
-    local InfiniteFly = Blatant:CreateToggle({
-        Name = "InfiniteFly",
-        CurrentValue = false,
-        Flag = "InfFlytoggle",
-        Callback = function(val)
+    local KillAura = NewFunc["NewElement"]({
+        ["Name"] = "Aura",
+        ["Tab"] = Novoline["Tabs"]["Combat"],
+        ["Callback"] = function(val)
             Enabled = val
             if Enabled then
-                safeornot = math.random(1, 7)
-                local origy = lplr.Character.HumanoidRootPart.Position.y
-                part = Instance.new("Part", workspace)
-                part.Size = Vector3.new(1,1,1)
-                part.Transparency = 1
-                part.Anchored = true
-                part.CanCollide = false
-                cam.CameraSubject = part
-                RunLoops:BindToHeartbeat("FunnyFlyPart", 1, function()
-                    local pos = lplr.Character.HumanoidRootPart.Position
-                    part.Position = Vector3.new(pos.x, origy, pos.z)
+                spawn(function()
+                    repeat
+                        task.wait(0.12)
+                        local nearest = getnearestplayer(Distance["Value"])
+                        if nearest ~= nil and nearest.Team ~= lplr.Team and isalive(nearest) and nearest.Character:FindFirstChild("Humanoid").Health > 0.1 and isalive(lplr) and lplr.Character:FindFirstChild("Humanoid").Health > 0.1 and not nearest.Character:FindFirstChild("ForceField") then
+                            local sword = getSword()
+                            spawn(function()
+                                local anim = Instance.new("Animation")
+                                anim.AnimationId = "rbxassetid://4947108314"
+                                local animator = lplr.Character:FindFirstChild("Humanoid"):FindFirstChild("Animator")
+                                animator:LoadAnimation(anim):Play()
+                                anim:Destroy()
+                                bedwars["ViewmodelController"]:playAnimation(15)
+                            end)
+                            if sword ~= nil then
+                                bedwars["SwordController"].lastAttack = game:GetService("Workspace"):GetServerTimeNow() - 0.11
+                                HitRemote:SendToServer({
+                                    ["weapon"] = sword.tool,
+                                    ["entityInstance"] = nearest.Character,
+                                    ["validate"] = {
+                                        ["raycast"] = {
+                                            ["cameraPosition"] = hashFunc(cam.CFrame.Position),
+                                            ["cursorDirection"] = hashFunc(Ray.new(cam.CFrame.Position, nearest.Character:FindFirstChild("HumanoidRootPart").Position).Unit.Direction)
+                                        },
+                                        ["targetPosition"] = hashFunc(nearest.Character:FindFirstChild("HumanoidRootPart").Position),
+                                        ["selfPosition"] = hashFunc(lplr.Character:FindFirstChild("HumanoidRootPart").Position + ((lplr.Character:FindFirstChild("HumanoidRootPart").Position - nearest.Character:FindFirstChild("HumanoidRootPart").Position).magnitude > 14 and (CFrame.lookAt(lplr.Character:FindFirstChild("HumanoidRootPart").Position, nearest.Character:FindFirstChild("HumanoidRootPart").Position).LookVector * 4) or Vector3.new(0, 0, 0)))
+                                    },
+                                    ["chargedAttack"] = {["chargeRatio"] = 0.8}
+                                })
+                            end
+                        end
+                    until not Enabled
                 end)
-                local cf = lplr.Character.HumanoidRootPart.CFrame
-                lplr.Character.HumanoidRootPart.CFrame = CFrame.new(cf.x, 300000, cf.z)
-                if lplr.Character.HumanoidRootPart.Position.X < 50000 then 
-                    lplr.Character.HumanoidRootPart.CFrame *= CFrame.new(0, 100000, 0)
-                end
-                InfFly.Enabled = true
-                FlyRender.Visible = true
-                if safeornot == 2 then
-                    FlyStat.Text = " " .. "UNSAFE!"
-                    FlyStat.TextColor3 = Color3.fromRGB(255, 32, 80)
-                else
-                    if safeornot ~= 2 then
-                        FlyStat.Text = " " .. " SAFE!"
-                        FlyStat.TextColor3 = Color3.fromRGB(42, 255, 102)
-                    end
-                end
-                repeat
-                    heightval = heightval + 1
-                    FlyHeight.Text = heightval
-                    task.wait()
-                    heighttext = FlyHeight.Text
-                until not Enabled and InfFly.Enabled == true and FlyRender.Visible == true
-            else
-                info("InfiniteFly - Waiting to return to original pos", 2)
-                repeat task.wait()
-                    heighttext = tonumber(FlyHeight.Text)
-                    heighttext = heighttext - 1
-                    FlyHeight.Text = tostring(heighttext)
-                until heighttext == 0
-                heightval = 0
-                task.wait(0.1)
-                RunLoops:UnbindFromHeartbeat("FunnyFlyPart")
-                local pos = lplr.Character.HumanoidRootPart.Position
-                local rcparams = RaycastParams.new()
-                rcparams.FilterType = Enum.RaycastFilterType.Whitelist
-                rcparams.FilterDescendantsInstances = {workspace.Map}
-                rc = workspace:Raycast(Vector3.new(pos.x, 300, pos.z), Vector3.new(0,-1000,0), rcparams)
-                if rc and rc.Position then
-                    lplr.Character.HumanoidRootPart.CFrame = CFrame.new(rc.Position) * CFrame.new(0,3,0)
-                end
-                cam.CameraSubject = lplr.Character
-                part:Destroy()
-                RunLoops:BindToHeartbeat("FunnyFlyVeloEnd", 1, function()
-                    lplr.Character.HumanoidRootPart.Velocity = Vector3.new(0,0,0)
-                    lplr.Character.HumanoidRootPart.CFrame = CFrame.new(rc.Position) * CFrame.new(0,3,0)
-                end)
-                RunLoops:UnbindFromHeartbeat("FunnyFlyVeloEnd")
-                InfFly.Enabled = false
-                FlyRender.Visible = false
             end
         end
     })
-    local ifkeybind = Blatant:CreateKeybind({
-        Name = "InfFlight Keybind",
-        CurrentKeybind = "B",
-        HoldToInteract = false,
-        Flag = "InfFlighttogglekeybind", -- A flag is the identifier for the configuration file, make sure every element has a different flag if you're using configuration saving to ensure no overlaps
-        Callback = function(Keybind)
-            if KeybindINFFLYCheck == true then
-                KeybindINFFLYCheck = false
-                InfiniteFly:Set(enabled)
-            else
-                if KeybindINFFLYCheck == false then
-                    KeybindINFFLYCheck = true
-                    InfiniteFly:Set(not enabled)
-                end
+end)
+
+runcode(function()
+    local Multiplier = {["Value"] = 0.01}
+    local Enabled = false
+    local Speed = NewFunc["NewElement"]({
+        ["Name"] = "Speed",
+        ["Tab"] = Novoline["Tabs"]["Blatant"],
+        ["Callback"] = function(val)
+            Enabled = val
+            if Enabled then
+                spawn(function()
+                    repeat
+                        task.wait()
+                        if isalive(lplr) then
+                            local hrp = lplr.Character:FindFirstChild("HumanoidRootPart")
+                            local hum = lplr.Character:FindFirstChild("Humanoid")
+                            if isnetworkowner(hrp) and hum.MoveDirection.Magnitude > 0 then
+                                lplr.Character:TranslateBy(hum.MoveDirection * Multiplier["Value"])
+                            end
+                        end
+                    until not Enabled
+                end)
             end
-        end,
+        end
     })
+    Speed:NewSlider({
+        ["Name"] = "SpeedVal",
+        ["Min"] = 0,
+        ["Max"] = 2,
+        ["Increment"] = 0.01,
+        ["Default"] = 0,
+        ["Callback"] = function(val)
+            Multiplier["Value"] = val
+        end
+    })
+end)
+
+if not shared["Novoline"] then
+    library:LoadConfiguration()
 end
+shared["Novoline"] = Novoline
+
+    end
